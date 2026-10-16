@@ -1,0 +1,7 @@
+outputs/
+work/
+*.zip
+sports-events-app/bin/
+sports-events-app/obj/
+.vscode/
+.idea/
