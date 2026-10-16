@@ -1,0 +1,9 @@
+outputs/
+work/
+*.zip
+sports-events-app/bin/
+sports-events-app/obj/
+.vscode/
+.idea/
+tmp/
+output/pdf/screenshots/organizer-panel.png

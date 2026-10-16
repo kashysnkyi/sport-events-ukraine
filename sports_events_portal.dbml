@@ -1,0 +1,271 @@
+Project sports_events_ukraine {
+  database_type: 'PostgreSQL'
+  Note: 'Sport Events Ukraine: публічний каталог подій, календар, реєстрації, турнірні результати та кабінети організатора й учасника.'
+}
+
+Table app_user {
+  id uuid [pk]
+  email varchar(320) [not null, unique]
+  display_name varchar(160) [not null]
+  role varchar(30) [not null, note: 'admin, organizer, athlete']
+  created_at timestamptz [not null]
+  deleted_at timestamptz [note: 'Soft delete']
+}
+
+Table sport {
+  id uuid [pk]
+  name varchar(100) [not null, unique]
+  description text
+  created_at timestamptz [not null]
+  last_modified_at timestamptz [not null]
+  last_modified_by uuid
+  deleted_at timestamptz
+}
+
+Table venue {
+  id uuid [pk]
+  name varchar(160) [not null]
+  address text [not null]
+  city varchar(100) [not null]
+  capacity int
+  created_at timestamptz [not null]
+  last_modified_at timestamptz [not null]
+  last_modified_by uuid
+  deleted_at timestamptz
+}
+
+Table sport_event {
+  id uuid [pk]
+  sport_id uuid [not null]
+  venue_id uuid [not null]
+  organizer_id uuid [not null]
+  name varchar(200) [not null]
+  description text
+  starts_at timestamptz [not null]
+  ends_at timestamptz [not null]
+  registration_deadline timestamptz
+  capacity int
+  status varchar(20) [not null, note: 'draft, published, cancelled, completed']
+  created_at timestamptz [not null]
+  last_modified_at timestamptz [not null]
+  last_modified_by uuid
+  deleted_at timestamptz [note: 'Soft delete']
+  indexes {
+    (status, starts_at)
+    (name) [type: gin]
+  }
+}
+
+Table event_category {
+  id uuid [pk]
+  event_id uuid [not null]
+  code varchar(40) [not null]
+  name varchar(120) [not null]
+  min_age int
+  max_age int
+  capacity int
+  created_at timestamptz [not null]
+  last_modified_at timestamptz [not null]
+  last_modified_by uuid
+  deleted_at timestamptz
+  indexes {
+    (event_id, code) [unique]
+  }
+}
+
+Table athlete_profile {
+  id uuid [pk]
+  user_id uuid [not null, unique]
+  birth_date date
+  country_code char(2)
+  created_at timestamptz [not null]
+  last_modified_at timestamptz [not null]
+  last_modified_by uuid
+  deleted_at timestamptz
+}
+
+Table team {
+  id uuid [pk]
+  name varchar(160) [not null]
+  owner_id uuid [not null]
+  created_at timestamptz [not null]
+  last_modified_at timestamptz [not null]
+  last_modified_by uuid
+  deleted_at timestamptz
+}
+
+Table team_member {
+  id uuid [pk]
+  team_id uuid [not null]
+  athlete_id uuid [not null]
+  member_role varchar(30) [not null]
+  joined_at timestamptz [not null]
+  left_at timestamptz
+  created_at timestamptz [not null]
+  last_modified_at timestamptz [not null]
+  last_modified_by uuid
+  deleted_at timestamptz
+  indexes {
+    (team_id, athlete_id) [unique]
+  }
+}
+
+Table event_registration {
+  id uuid [pk]
+  category_id uuid [not null]
+  athlete_id uuid [not null]
+  status varchar(20) [not null]
+  registered_at timestamptz [not null]
+  created_at timestamptz [not null]
+  last_modified_at timestamptz [not null]
+  last_modified_by uuid
+  deleted_at timestamptz
+  indexes {
+    (category_id, athlete_id) [unique]
+    athlete_id
+  }
+}
+
+Table event_team_entry {
+  id uuid [pk]
+  category_id uuid [not null]
+  team_id uuid [not null]
+  status varchar(20) [not null]
+  registered_at timestamptz [not null]
+  created_at timestamptz [not null]
+  last_modified_at timestamptz [not null]
+  last_modified_by uuid
+  deleted_at timestamptz
+  indexes {
+    (category_id, team_id) [unique]
+  }
+}
+
+Table competition {
+  id uuid [pk]
+  event_id uuid [not null]
+  category_id uuid
+  name varchar(160) [not null]
+  format varchar(30) [not null]
+  status varchar(20) [not null]
+  created_at timestamptz [not null]
+  last_modified_at timestamptz [not null]
+  last_modified_by uuid
+  deleted_at timestamptz
+}
+
+Table match {
+  id uuid [pk]
+  competition_id uuid [not null]
+  round_no int [not null]
+  scheduled_at timestamptz
+  status varchar(20) [not null]
+  created_at timestamptz [not null]
+  last_modified_at timestamptz [not null]
+  last_modified_by uuid
+  deleted_at timestamptz
+}
+
+Table match_participant {
+  id uuid [pk]
+  match_id uuid [not null]
+  athlete_id uuid
+  team_id uuid
+  lane_no int
+  created_at timestamptz [not null]
+  last_modified_at timestamptz [not null]
+  last_modified_by uuid
+  deleted_at timestamptz
+  Note: 'Рівно один із athlete_id або team_id має бути заданий.'
+}
+
+Table match_result {
+  id uuid [pk]
+  match_id uuid [not null, unique]
+  winner_participant_id uuid
+  score_summary varchar(500)
+  recorded_by uuid [not null]
+  recorded_at timestamptz [not null]
+  created_at timestamptz [not null]
+  last_modified_at timestamptz [not null]
+  last_modified_by uuid
+  deleted_at timestamptz
+}
+
+Table sponsor {
+  id uuid [pk]
+  name varchar(160) [not null, unique]
+  website text
+  created_at timestamptz [not null]
+  last_modified_at timestamptz [not null]
+  last_modified_by uuid
+  deleted_at timestamptz
+}
+
+Table event_sponsor {
+  id uuid [pk]
+  event_id uuid [not null]
+  sponsor_id uuid [not null]
+  contribution_type varchar(40) [not null]
+  contribution_amount numeric(12,2)
+  created_at timestamptz [not null]
+  last_modified_at timestamptz [not null]
+  last_modified_by uuid
+  deleted_at timestamptz
+  indexes {
+    (event_id, sponsor_id) [unique]
+  }
+}
+
+Table audit_log {
+  id bigint [pk, increment]
+  table_name varchar(63) [not null]
+  row_id uuid [not null]
+  operation char(1) [not null]
+  changed_at timestamptz [not null]
+  changed_by uuid
+  old_data jsonb
+  new_data jsonb
+}
+
+Ref: sport_event.sport_id > sport.id
+Ref: sport_event.venue_id > venue.id
+Ref: sport_event.organizer_id > app_user.id
+Ref: sport.last_modified_by > app_user.id
+Ref: venue.last_modified_by > app_user.id
+Ref: sport_event.last_modified_by > app_user.id
+Ref: event_category.event_id > sport_event.id
+Ref: event_category.last_modified_by > app_user.id
+Ref: athlete_profile.user_id > app_user.id
+Ref: athlete_profile.last_modified_by > app_user.id
+Ref: team.owner_id > app_user.id
+Ref: team.last_modified_by > app_user.id
+Ref: team_member.team_id > team.id
+Ref: team_member.athlete_id > athlete_profile.id
+Ref: team_member.last_modified_by > app_user.id
+Ref: event_registration.category_id > event_category.id
+Ref: event_registration.athlete_id > athlete_profile.id
+Ref: event_registration.last_modified_by > app_user.id
+Ref: event_team_entry.category_id > event_category.id
+Ref: event_team_entry.team_id > team.id
+Ref: event_team_entry.last_modified_by > app_user.id
+Ref: competition.event_id > sport_event.id
+Ref: competition.category_id > event_category.id
+Ref: competition.last_modified_by > app_user.id
+Ref: match.competition_id > competition.id
+Ref: match.last_modified_by > app_user.id
+Ref: match_participant.match_id > match.id
+Ref: match_participant.athlete_id > athlete_profile.id
+Ref: match_participant.team_id > team.id
+Ref: match_participant.last_modified_by > app_user.id
+Ref: match_result.match_id > match.id
+Ref: match_result.winner_participant_id > match_participant.id
+Ref: match_result.recorded_by > app_user.id
+Ref: match_result.last_modified_by > app_user.id
+Ref: event_sponsor.event_id > sport_event.id
+Ref: event_sponsor.sponsor_id > sponsor.id
+Ref: sponsor.last_modified_by > app_user.id
+Ref: event_sponsor.last_modified_by > app_user.id
+Ref: audit_log.changed_by > app_user.id
+
+

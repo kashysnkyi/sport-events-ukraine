@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="uk">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="Sport Events Ukraine - каталог спортивних подій, календар змагань і результати." />
+    <title>Sport Events Ukraine - каталог подій</title>
+    <link rel="stylesheet" href="assets/styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="topbar">
+        <a class="brand" href="#" data-page="catalog">
+          <span class="brand-mark">SE</span>
+          <span><b>sport-events</b><small>.com</small></span>
+        </a>
+        <nav class="main-nav" aria-label="Основна навігація">
+          <button class="nav-link active" data-page="catalog">Події</button>
+          <button class="nav-link" data-page="calendar">Календар</button>
+          <button class="nav-link" data-page="results">Результати</button>
+          <button class="nav-link" data-page="organizers">Організаторам</button>
+        </nav>
+        <div class="top-actions">
+          <button class="icon-btn" id="notificationsButton" aria-label="Сповіщення">♧</button>
+          <button class="account-btn" id="accountButton"><span id="accountAvatar">?</span><span id="accountLabel">Увійти</span><i>⌄</i></button>
+        </div>
+      </header>
+
+      <main>
+        <section class="hero">
+          <div class="hero-copy">
+            <span class="eyebrow">Єдиний каталог спортивних подій України</span>
+            <h1>Знайди свою<br /><em>наступну перемогу.</em></h1>
+            <p>Турніри, забіги, матчі та старти в одному відкритому календарі. Обирай подію, перевіряй умови та реєструйся онлайн.</p>
+            <div class="hero-actions">
+              <button class="primary-btn" data-page="catalog">Знайти подію <span>↗</span></button>
+              <button class="ghost-btn" data-page="organizers">Опублікувати подію</button>
+            </div>
+          </div>
+          <div class="hero-art">
+            <div class="art-orbit orbit-one"></div>
+            <div class="art-orbit orbit-two"></div>
+            <div class="art-card">
+              <span class="art-label">НАЙБЛИЖЧА ПОДІЯ</span>
+              <strong>Кубок України<br />з футболу</strong>
+              <span class="art-meta">18-19 жовтня · Київ</span>
+              <div class="art-foot"><span class="art-ball">⚽</span><span>28 учасників</span><b>→</b></div>
+            </div>
+          </div>
+        </section>
+
+        <section class="stat-strip">
+          <div><strong id="statEvents">12</strong><span>активних подій</span></div>
+          <div><strong id="statCities">9</strong><span>міст України</span></div>
+          <div><strong id="statSports">5</strong><span>видів спорту</span></div>
+          <div><strong id="statAthletes">300+</strong><span>учасників у базі</span></div>
+        </section>
+
+        <div id="pageRoot"></div>
+      </main>
+
+      <footer class="footer">
+        <div class="footer-brand"><span class="brand-mark">SE</span><b>sport-events.com</b></div>
+        <span>Каталог спортивних подій України</span>
+        <span>PostgreSQL · Repository · Unit of Work</span>
+      </footer>
+    </div>
+
+    <div class="modal-backdrop hidden" id="modalBackdrop">
+      <div class="modal" id="modalCard" role="dialog" aria-modal="true">
+        <button class="modal-close" id="modalClose">×</button>
+        <div id="modalContent"></div>
+      </div>
+    </div>
+    <div class="toast hidden" id="toast"></div>
+    <script src="assets/app.js"></script>
+  </body>
+</html>
+
